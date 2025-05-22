@@ -15,6 +15,13 @@ import java.util.List;
 @Entity
 public class User {
 
+    public User(String username, String name, String password, List<Book> books) {
+        this.username = username;
+        this.name = name;
+        this.password = password;
+        this.books = books;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

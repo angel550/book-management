@@ -32,6 +32,9 @@ public class Book {
     private Integer publication_year;
 
     @Column(nullable = false)
+    private String author;
+
+    @Column(nullable = false)
     private String publisher;
 
     @Enumerated(EnumType.STRING)
@@ -39,9 +42,6 @@ public class Book {
 
     @ManyToOne
     private User user;
-
-    @ManyToOne
-    private Author author;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
