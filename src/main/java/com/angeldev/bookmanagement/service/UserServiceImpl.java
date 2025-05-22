@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse findUserByUsername(String username) {
+    public UserResponse findUser(String username) {
         Optional<User> user = userRepository.findUserByUsername(username);
 
         if (user.isPresent()) {
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserResponse updateUserByUsername(String username, UserRequest userRequest) {
+    public UserResponse updateUser(String username, UserRequest userRequest) {
         if (!userRequest.password().equals(userRequest.passwordRepeated())) return null;
 
         Optional<User> user = userRepository.findUserByUsername(username);
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteUserByUsername(String username) {
+    public void deleteUser(String username) {
         if (userRepository.deleteUserByUsername(username) != 1) {
             System.out.println("error");
         }

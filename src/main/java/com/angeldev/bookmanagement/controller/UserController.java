@@ -22,8 +22,13 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> findAll() {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<UserResponse> findUser(@PathVariable String username) {
+        return new ResponseEntity<>(userService.findUser(username), HttpStatus.OK);
     }
 
     @PostMapping
@@ -35,12 +40,12 @@ public class UserController {
     public ResponseEntity<UserResponse> updateUser(@PathVariable String username, @Valid @RequestBody UserRequest userRequest) {
         System.out.println(username);
         System.out.println(userRequest.username());
-        return new ResponseEntity<>(userService.updateUserByUsername(username, userRequest), HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUser(username, userRequest), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{username}")
     public ResponseEntity<Void> deleteUser(@PathVariable String username) {
-        userService.deleteUserByUsername(username);
+        userService.deleteUser(username);
         return ResponseEntity.noContent().build();
     }
 }

@@ -8,8 +8,8 @@ import java.util.List;
 public interface UserService {
 
     List<UserResponse> findAll();
-    UserResponse findUserByUsername(String username);
-    UserResponse updateUserByUsername(String username, UserRequest userRequest);
+    UserResponse findUser(String username);
+    UserResponse updateUser(String username, UserRequest userRequest);
     UserResponse createUser(UserRequest userRequest);
-    void deleteUserByUsername(String username);
+    void deleteUser(String username);
 }
