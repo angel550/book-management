@@ -18,6 +18,16 @@ import java.util.Set;
 @Entity
 public class Book {
 
+    public Book(String title, String isbn, Integer publication_year,
+                String author, String publisher, Status status) {
+        this.title = title;
+        this.isbn = isbn;
+        this.publication_year = publication_year;
+        this.author = author;
+        this.publisher = publisher;
+        this.status = status;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +35,7 @@ public class Book {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String isbn;
 
     @Column(nullable = false)
@@ -43,11 +53,11 @@ public class Book {
     @ManyToOne
     private User user;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    /*@ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_genre",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private Set<Genre> genres = new HashSet<>();
+    private Set<Genre> genres = new HashSet<>();*/
 }

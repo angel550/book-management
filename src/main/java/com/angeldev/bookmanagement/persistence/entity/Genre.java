@@ -27,6 +27,6 @@ public class Genre {
     @Column(nullable = false)
     private String description;
 
-    @ManyToMany(mappedBy = "genres")
-    private Set<Book> books = new HashSet<>();
+    /*@ManyToMany(mappedBy = "genres")
+    private Set<Book> books = new HashSet<>();*/
 }
