@@ -22,10 +22,11 @@ public class BookMapper {
         return new BookResponse(
                 book.getTitle(),
                 book.getIsbn(),
-                book.getPublication_year(),
+                book.getPublicationYear(),
                 book.getAuthor(),
                 book.getPublisher(),
-                book.getStatus()
+                book.getStatus(),
+                book.getProfile().getName()
         );
     }
 
@@ -33,7 +34,7 @@ public class BookMapper {
         return new Book(
                 bookRequest.title(),
                 bookRequest.isbn(),
-                bookRequest.publication_year(),
+                bookRequest.publicationYear(),
                 bookRequest.author(),
                 bookRequest.publisher(),
                 bookRequest.status()

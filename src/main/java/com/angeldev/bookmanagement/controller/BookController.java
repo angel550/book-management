@@ -2,11 +2,9 @@ package com.angeldev.bookmanagement.controller;
 
 import com.angeldev.bookmanagement.dto.request.BookRequest;
 import com.angeldev.bookmanagement.dto.response.BookResponse;
-import com.angeldev.bookmanagement.dto.response.UserResponse;
 import com.angeldev.bookmanagement.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +21,12 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookResponse>> findAll() {
-        return new ResponseEntity<>(bookService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<BookResponse>> findAll(@RequestParam(required = false) String profile) {
+        if (profile == null) {
+            return new ResponseEntity<>(bookService.findAll(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(bookService.findAll(profile), HttpStatus.OK);
     }
 
     @GetMapping("/{title}")

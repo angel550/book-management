@@ -18,11 +18,11 @@ import java.util.Set;
 @Entity
 public class Book {
 
-    public Book(String title, String isbn, Integer publication_year,
+    public Book(String title, String isbn, Integer publicationYear,
                 String author, String publisher, Status status) {
         this.title = title;
         this.isbn = isbn;
-        this.publication_year = publication_year;
+        this.publicationYear = publicationYear;
         this.author = author;
         this.publisher = publisher;
         this.status = status;
@@ -32,14 +32,14 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String title;
 
-    @Column(nullable = true)
+    @Column(nullable = false, unique = true)
     private String isbn;
 
-    @Column(nullable = false)
-    private Integer publication_year;
+    @Column(name = "publication_year", nullable = false)
+    private Integer publicationYear;
 
     @Column(nullable = false)
     private String author;
@@ -51,13 +51,5 @@ public class Book {
     private Status status;
 
     @ManyToOne
-    private User user;
-
-    /*@ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "book_genre",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id")
-    )
-    private Set<Genre> genres = new HashSet<>();*/
+    private Profile profile;
 }

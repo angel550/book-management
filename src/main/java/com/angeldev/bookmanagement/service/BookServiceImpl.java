@@ -4,28 +4,36 @@ import com.angeldev.bookmanagement.dto.request.BookRequest;
 import com.angeldev.bookmanagement.dto.response.BookResponse;
 import com.angeldev.bookmanagement.mappers.BookMapper;
 import com.angeldev.bookmanagement.persistence.entity.Book;
-import com.angeldev.bookmanagement.persistence.entity.User;
+import com.angeldev.bookmanagement.persistence.entity.Profile;
 import com.angeldev.bookmanagement.persistence.repository.BookRepository;
-import com.angeldev.bookmanagement.persistence.repository.UserRepository;
+import com.angeldev.bookmanagement.persistence.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
 
-    public BookServiceImpl(BookRepository bookRepository, UserRepository userRepository) {
+    public BookServiceImpl(BookRepository bookRepository, ProfileRepository profileRepository) {
         this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
+        this.profileRepository = profileRepository;
     }
 
     @Override
     public List<BookResponse> findAll() {
         List<Book> books = bookRepository.findAll();
+
+        return BookMapper.bookToBookResponseList(books);
+    }
+
+    @Override
+    public List<BookResponse> findAll(String profile) {
+        Long profileId = this.getProfile(profile).getId();
+
+        List<Book> books = bookRepository.findAllFromProfile(profileId);
 
         return BookMapper.bookToBookResponseList(books);
     }
@@ -39,15 +47,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookResponse createBook(BookRequest bookRequest) {
-        Optional<User> user = userRepository.findUserByUsername(bookRequest.username());
-
-        if (user.isPresent()) {
-            System.out.println(user.get().getName());
-        }
+        Profile profile = this.getProfile(bookRequest.profileName());
 
         Book newBook = BookMapper.BookRequestToBook(bookRequest);
 
-        newBook.setUser(user.get());
+        newBook.setProfile(profile);
 
         return BookMapper.bookToBookResponse(bookRepository.save(newBook));
     }
@@ -62,7 +66,7 @@ public class BookServiceImpl implements BookService {
         oldBook.setAuthor(newBook.getAuthor());
         oldBook.setPublisher(newBook.getPublisher());
         oldBook.setIsbn(newBook.getIsbn());
-        oldBook.setPublication_year(newBook.getPublication_year());
+        oldBook.setPublicationYear(newBook.getPublicationYear());
         oldBook.setStatus(bookRequest.status());
 
         bookRepository.save(oldBook);
@@ -72,6 +76,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteBook(String title) {
-        userRepository.deleteUserByUsername(title);
+        bookRepository.deleteBookByTitle(title);
+    }
+
+    private Profile getProfile(String name) {
+        return profileRepository.findProfileByName(name).get();
     }
 }

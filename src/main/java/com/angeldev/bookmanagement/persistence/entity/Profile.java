@@ -6,27 +6,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Entity
-public class Genre {
+public class Profile {
+
+    public Profile(String name, String description, List<Book> books) {
+        this.name = name;
+        this.description = description;
+        this.books = books;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = false)
     private String description;
 
-    /*@ManyToMany(mappedBy = "genres")
-    private Set<Book> books = new HashSet<>();*/
+    @OneToMany(mappedBy = "profile", cascade = {CascadeType.REMOVE})
+    private List<Book> books;
 }

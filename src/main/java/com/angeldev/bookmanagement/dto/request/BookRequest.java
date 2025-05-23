@@ -1,6 +1,7 @@
 package com.angeldev.bookmanagement.dto.request;
 
 import com.angeldev.bookmanagement.util.Status;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 public record BookRequest(
@@ -14,7 +15,8 @@ public record BookRequest(
 
         @Min(value = 1000, message = "Publication year must be equal or greater than 1000")
         @Max(value = 2025, message = "Publication year must be lower or equal than 2025")
-        Integer publication_year,
+        @JsonProperty(value = "publication_year")
+        Integer publicationYear,
 
         @NotBlank(message = "Author must not be blank")
         @Size(min = 2, max = 255, message = "Field must have between {min} and {max}")
@@ -26,9 +28,9 @@ public record BookRequest(
 
         Status status,
 
-        @Pattern(regexp = "[a-zA-Z0-9-_]{8,255}",
-                message = "Username must consist of 8 to 255 characters and only contain letters, " +
-                        "digits, and underscores.")
-        String username
+        @NotBlank(message = "Publisher must not be blank")
+        @Size(min = 2, max = 255, message = "Publisher must be between {min} and {max} characters")
+        @JsonProperty(value = "profile_name")
+        String profileName
 ) {
 }

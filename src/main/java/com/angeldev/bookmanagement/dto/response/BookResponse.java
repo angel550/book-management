@@ -1,13 +1,24 @@
 package com.angeldev.bookmanagement.dto.response;
 
+import com.angeldev.bookmanagement.persistence.entity.Profile;
 import com.angeldev.bookmanagement.util.Status;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record BookResponse(
         String title,
+
         String isbn,
-        Integer publication_year,
+
+        @JsonProperty(value = "publication_year")
+        Integer publicationYear,
+
         String author,
+
         String publisher,
-        Status status
+
+        Status status,
+
+        @JsonProperty(value = "profile_name")
+        String profileName
 ) {
 }
