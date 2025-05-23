@@ -62,6 +62,8 @@ public class BookServiceImpl implements BookService {
 
         Book oldBook = bookRepository.findBookByTitle(title).get();
 
+        if (bookRequest.profileName().equals(oldBook.getProfile().getName())) return null;
+
         oldBook.setTitle(newBook.getTitle());
         oldBook.setAuthor(newBook.getAuthor());
         oldBook.setPublisher(newBook.getPublisher());
