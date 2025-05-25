@@ -1,6 +1,7 @@
 package com.angeldev.bookmanagement.controller;
 
 import com.angeldev.bookmanagement.dto.request.ProfileRequest;
+import com.angeldev.bookmanagement.dto.response.BookResponse;
 import com.angeldev.bookmanagement.dto.response.ProfileResponse;
 import com.angeldev.bookmanagement.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,10 +30,10 @@ public class ProfileController {
         return new ResponseEntity<>(profileService.findAll(), HttpStatus.OK);
     }
 
-    @Operation(summary = "Get a profile by name", description = "Retrieve a specific profile by name")
-    @GetMapping("/{name}")
-    public ResponseEntity<ProfileResponse> findProfile(@PathVariable String name) {
-        return new ResponseEntity<>(profileService.findProfile(name), HttpStatus.OK);
+    @Operation(summary = "Get a profile by id", description = "Retrieve a specific profile by id")
+    @GetMapping("/{id}")
+    public ResponseEntity<ProfileResponse> findProfile(@PathVariable Long id) {
+        return new ResponseEntity<>(profileService.findProfile(id), HttpStatus.OK);
     }
 
     @Operation(summary = "Create a new profile", description = "Add a new profile to the database")
@@ -42,15 +43,20 @@ public class ProfileController {
     }
 
     @Operation(summary = "Update a profile", description = "Update the information of an existing profile")
-    @PutMapping(value = "/{name}")
-    public ResponseEntity<ProfileResponse> updateProfile(@PathVariable String name, @Valid @RequestBody ProfileRequest profileRequest) {
-        return new ResponseEntity<>(profileService.updateProfile(name, profileRequest), HttpStatus.OK);
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<ProfileResponse> updateProfile(@PathVariable Long id, @Valid @RequestBody ProfileRequest profileRequest) {
+        return new ResponseEntity<>(profileService.updateProfile(id, profileRequest), HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete a profile", description = "Remove a profile and their associated books from the database")
-    @DeleteMapping(value = "/{name}")
-    public ResponseEntity<Void> deleteProfile(@PathVariable String name) {
-        profileService.deleteProfile(name);
+    @Operation(summary = "Delete a profile by id", description = "Remove a profile and their associated books from the database")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteProfile(@PathVariable Long id) {
+        profileService.deleteProfile(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/books")
+    public ResponseEntity<List<BookResponse>> findAllBooks(@PathVariable Long id) {
+        return new ResponseEntity<>(profileService.findAllBooks(id), HttpStatus.OK);
     }
 }

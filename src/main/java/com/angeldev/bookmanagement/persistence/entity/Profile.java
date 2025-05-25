@@ -31,6 +31,6 @@ public class Profile {
     @Column(nullable = false)
     private String description;
 
-    @OneToMany(mappedBy = "profile", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "profile", cascade = {CascadeType.REMOVE}, fetch = FetchType.LAZY)
     private List<Book> books;
 }

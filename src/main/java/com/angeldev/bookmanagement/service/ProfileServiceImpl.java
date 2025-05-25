@@ -1,8 +1,13 @@
 package com.angeldev.bookmanagement.service;
 
 import com.angeldev.bookmanagement.dto.request.ProfileRequest;
+import com.angeldev.bookmanagement.dto.response.BookResponse;
 import com.angeldev.bookmanagement.dto.response.ProfileResponse;
+import com.angeldev.bookmanagement.exception.DuplicateObjectException;
+import com.angeldev.bookmanagement.exception.ObjectNotFoundException;
+import com.angeldev.bookmanagement.mappers.BookMapper;
 import com.angeldev.bookmanagement.mappers.ProfileMapper;
+import com.angeldev.bookmanagement.persistence.entity.Book;
 import com.angeldev.bookmanagement.persistence.entity.Profile;
 import com.angeldev.bookmanagement.persistence.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
@@ -10,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -33,19 +37,37 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ProfileResponse findProfile(String name) {
-        Optional<Profile> profile = profileRepository.findProfileByName(name);
+    public List<BookResponse> findAllBooks(Long id) {
 
-        if (profile.isPresent()) {
-            return ProfileMapper.profileToProfileResponse(profile.get());
-        }
+        Profile profile = profileRepository.findProfileById(id).orElseThrow(() ->
+            new ObjectNotFoundException(
+                    Profile.class.getSimpleName(),
+                    id.toString()
+            ));
 
-        return null;
+        List<Book> books = profile.getBooks();
+
+        return BookMapper.bookToBookResponseList(books);
+    }
+
+    @Override
+    public ProfileResponse findProfile(Long id) {
+        Profile profile = profileRepository.findProfileById(id)
+                .orElseThrow(() -> new ObjectNotFoundException(
+                        Profile.class.getSimpleName(),
+                        id.toString()
+        ));
+
+        return ProfileMapper.profileToProfileResponse(profile);
     }
 
     @Transactional
     @Override
     public ProfileResponse createProfile(ProfileRequest profileRequest) {
+        if (profileRepository.existsByName(profileRequest.name())) {
+            throw new DuplicateObjectException(Profile.class.getSimpleName(), "Name");
+        }
+
         Profile newProfile = ProfileMapper.profileRequestToProfile(profileRequest);
 
         return ProfileMapper.profileToProfileResponse(profileRepository.save(newProfile));
@@ -53,9 +75,12 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Transactional
     @Override
-    public ProfileResponse updateProfile(String name, ProfileRequest profileRequest) {
-        Optional<Profile> profile = profileRepository.findProfileByName(name);
-        Profile oldProfile = profile.get();
+    public ProfileResponse updateProfile(Long id, ProfileRequest profileRequest) {
+        Profile oldProfile = profileRepository.findProfileById(id)
+                .orElseThrow(() -> new ObjectNotFoundException(
+                        Profile.class.getSimpleName(),
+                        id.toString()
+        ));
 
         Profile newProfile = ProfileMapper.profileRequestToProfile(profileRequest);
 
@@ -67,8 +92,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Transactional
     @Override
-    public void deleteProfile(String name) {
-        if (profileRepository.deleteProfileByName(name) != 1) {
+    public void deleteProfile(Long id) {
+        if (profileRepository.deleteProfileById(id) != 1) {
             System.out.println("error");
         }
     }

@@ -2,12 +2,15 @@ package com.angeldev.bookmanagement.service;
 
 import com.angeldev.bookmanagement.dto.request.BookRequest;
 import com.angeldev.bookmanagement.dto.response.BookResponse;
+import com.angeldev.bookmanagement.exception.DuplicateObjectException;
+import com.angeldev.bookmanagement.exception.ObjectNotFoundException;
 import com.angeldev.bookmanagement.mappers.BookMapper;
 import com.angeldev.bookmanagement.persistence.entity.Book;
 import com.angeldev.bookmanagement.persistence.entity.Profile;
 import com.angeldev.bookmanagement.persistence.repository.BookRepository;
 import com.angeldev.bookmanagement.persistence.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,24 +33,23 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookResponse> findAll(String profile) {
-        Long profileId = this.getProfile(profile).getId();
-
-        List<Book> books = bookRepository.findAllFromProfile(profileId);
-
-        return BookMapper.bookToBookResponseList(books);
-    }
-
-    @Override
-    public BookResponse findBook(String title) {
-        Book book = bookRepository.findBookByTitle(title).get();
+    public BookResponse findBook(Long id) {
+        Book book = bookRepository.findBookById(id).orElseThrow(() -> new ObjectNotFoundException(
+                Book.class.getSimpleName(),
+                id.toString()
+        ));
 
         return BookMapper.bookToBookResponse(book);
     }
 
+    @Transactional
     @Override
     public BookResponse createBook(BookRequest bookRequest) {
-        Profile profile = this.getProfile(bookRequest.profileName());
+        Profile profile = this.getProfile(bookRequest.profileId());
+
+        if (bookRepository.existsByIsbn(bookRequest.isbn())) {
+            throw new DuplicateObjectException(Book.class.getSimpleName(), "isbn");
+        }
 
         Book newBook = BookMapper.BookRequestToBook(bookRequest);
 
@@ -56,13 +58,15 @@ public class BookServiceImpl implements BookService {
         return BookMapper.bookToBookResponse(bookRepository.save(newBook));
     }
 
+    @Transactional
     @Override
-    public BookResponse updateBook(String title, BookRequest bookRequest) {
+    public BookResponse updateBook(Long id, BookRequest bookRequest) {
+        Book oldBook = bookRepository.findBookById(id).orElseThrow(() -> new ObjectNotFoundException(
+                Book.class.getSimpleName(),
+                id.toString()
+        ));
+
         Book newBook = BookMapper.BookRequestToBook(bookRequest);
-
-        Book oldBook = bookRepository.findBookByTitle(title).get();
-
-        if (bookRequest.profileName().equals(oldBook.getProfile().getName())) return null;
 
         oldBook.setTitle(newBook.getTitle());
         oldBook.setAuthor(newBook.getAuthor());
@@ -71,17 +75,23 @@ public class BookServiceImpl implements BookService {
         oldBook.setPublicationYear(newBook.getPublicationYear());
         oldBook.setStatus(bookRequest.status());
 
+        oldBook.setProfile(getProfile(bookRequest.profileId()));
+
         bookRepository.save(oldBook);
 
         return BookMapper.bookToBookResponse(oldBook);
     }
 
+    @Transactional
     @Override
-    public void deleteBook(String title) {
-        bookRepository.deleteBookByTitle(title);
+    public void deleteBook(Long id) {
+        bookRepository.deleteBookById(id);
     }
 
-    private Profile getProfile(String name) {
-        return profileRepository.findProfileByName(name).get();
+    private Profile getProfile(Long id) {
+        return profileRepository.findProfileById(id).orElseThrow(() -> new ObjectNotFoundException(
+                Profile.class.getSimpleName(),
+                id.toString()
+        ));
     }
 }

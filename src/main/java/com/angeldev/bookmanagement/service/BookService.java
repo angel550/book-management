@@ -7,9 +7,8 @@ import java.util.List;
 
 public interface BookService {
     List<BookResponse> findAll();
-    List<BookResponse> findAll(String profile);
-    BookResponse findBook(String title);
+    BookResponse findBook(Long id);
     BookResponse createBook(BookRequest bookRequest);
-    BookResponse updateBook(String title, BookRequest bookRequest);
-    void deleteBook(String title);
+    BookResponse updateBook(Long id, BookRequest bookRequest);
+    void deleteBook(Long id);
 }

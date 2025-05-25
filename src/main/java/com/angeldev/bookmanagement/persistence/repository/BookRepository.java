@@ -11,8 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
-    Optional<Book> findBookByTitle(String title);
-    void deleteBookByTitle(String title);
+    Optional<Book> findBookById(Long id);
+    void deleteBookById(Long id);
+    boolean existsByIsbn(String isbn);
 
     @Query("SELECT b FROM Book b WHERE b.profile.id = :profileId")
     List<Book> findAllFromProfile(@Param("profileId") Long profileId);

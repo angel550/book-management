@@ -28,9 +28,13 @@ public record BookRequest(
 
         Status status,
 
-        @NotBlank(message = "Publisher must not be blank")
+        @Min(value = 1, message = "profile_id must be equal or greater than 0")
+        @JsonProperty(value = "profile_id")
+        Long profileId
+
+        /*@NotBlank(message = "Publisher must not be blank")
         @Size(min = 2, max = 255, message = "Publisher must be between {min} and {max} characters")
         @JsonProperty(value = "profile_name")
-        String profileName
+        String profileName*/
 ) {
 }
