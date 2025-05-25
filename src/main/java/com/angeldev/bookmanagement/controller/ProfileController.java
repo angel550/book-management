@@ -55,6 +55,7 @@ public class ProfileController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Get all books from a profile", description = "Get all books of a specific profile")
     @GetMapping("/{id}/books")
     public ResponseEntity<List<BookResponse>> findAllBooks(@PathVariable Long id) {
         return new ResponseEntity<>(profileService.findAllBooks(id), HttpStatus.OK);

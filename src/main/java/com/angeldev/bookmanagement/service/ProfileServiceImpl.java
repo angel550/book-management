@@ -38,7 +38,6 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public List<BookResponse> findAllBooks(Long id) {
-
         Profile profile = profileRepository.findProfileById(id).orElseThrow(() ->
             new ObjectNotFoundException(
                     Profile.class.getSimpleName(),
