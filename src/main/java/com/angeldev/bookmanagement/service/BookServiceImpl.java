@@ -34,10 +34,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookResponse findBook(Long id) {
-        Book book = bookRepository.findBookById(id).orElseThrow(() -> new ObjectNotFoundException(
-                Book.class.getSimpleName(),
-                id.toString()
-        ));
+        Book book = this.getBook(id);
 
         return BookMapper.bookToBookResponse(book);
     }
@@ -61,10 +58,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public BookResponse updateBook(Long id, BookRequest bookRequest) {
-        Book oldBook = bookRepository.findBookById(id).orElseThrow(() -> new ObjectNotFoundException(
-                Book.class.getSimpleName(),
-                id.toString()
-        ));
+        Book oldBook = this.getBook(id);
 
         Book newBook = BookMapper.BookRequestToBook(bookRequest);
 
@@ -85,12 +79,21 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public void deleteBook(Long id) {
-        bookRepository.deleteBookById(id);
+        this.getBook(id);
+
+        bookRepository.deleteById(id);
     }
 
     private Profile getProfile(Long id) {
-        return profileRepository.findProfileById(id).orElseThrow(() -> new ObjectNotFoundException(
+        return profileRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(
                 Profile.class.getSimpleName(),
+                id.toString()
+        ));
+    }
+
+    private Book getBook(Long id) {
+        return bookRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(
+                Book.class.getSimpleName(),
                 id.toString()
         ));
     }

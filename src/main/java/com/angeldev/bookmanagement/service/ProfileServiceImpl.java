@@ -27,22 +27,12 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public List<ProfileResponse> findAll() {
-        List<Profile> profiles = new ArrayList<>();
-
-        for (Profile p : profileRepository.findAll()) {
-            profiles.add(p);
-        }
-
-        return ProfileMapper.profileToProfileResponseList(profiles);
+        return ProfileMapper.profileToProfileResponseList(profileRepository.findAll());
     }
 
     @Override
     public List<BookResponse> findAllBooks(Long id) {
-        Profile profile = profileRepository.findProfileById(id).orElseThrow(() ->
-            new ObjectNotFoundException(
-                    Profile.class.getSimpleName(),
-                    id.toString()
-            ));
+        Profile profile = this.getProfile(id);
 
         List<Book> books = profile.getBooks();
 
@@ -51,11 +41,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileResponse findProfile(Long id) {
-        Profile profile = profileRepository.findProfileById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(
-                        Profile.class.getSimpleName(),
-                        id.toString()
-        ));
+        Profile profile = this.getProfile(id);
 
         return ProfileMapper.profileToProfileResponse(profile);
     }
@@ -75,11 +61,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     @Override
     public ProfileResponse updateProfile(Long id, ProfileRequest profileRequest) {
-        Profile oldProfile = profileRepository.findProfileById(id)
-                .orElseThrow(() -> new ObjectNotFoundException(
-                        Profile.class.getSimpleName(),
-                        id.toString()
-        ));
+        Profile oldProfile = this.getProfile(id);
 
         Profile newProfile = ProfileMapper.profileRequestToProfile(profileRequest);
 
@@ -92,8 +74,16 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     @Override
     public void deleteProfile(Long id) {
-        if (profileRepository.deleteProfileById(id) != 1) {
-            System.out.println("error");
-        }
+        this.getProfile(id);
+
+        profileRepository.deleteById(id);
+    }
+
+    private Profile getProfile(Long id) {
+        return profileRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException(
+                        Profile.class.getSimpleName(),
+                        id.toString()
+                ));
     }
 }
